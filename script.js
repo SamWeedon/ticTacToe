@@ -19,31 +19,66 @@ const gameBoard = (() => {
                  null,null,null,
                  null,null,null];
     const boxes = document.querySelectorAll('.box');
+    
+    const winningCombinations = [
+        // Horizontal combinations
+        [0, 1, 2], // Top row
+        [3, 4, 5], // Middle row
+        [6, 7, 8], // Bottom row
+      
+        // Vertical combinations
+        [0, 3, 6], // Left column
+        [1, 4, 7], // Middle column
+        [2, 5, 8], // Right column
+      
+        // Diagonal combinations
+        [0, 4, 8], // Top-left to bottom-right diagonal
+        [2, 4, 6]  // Top-right to bottom-left diagonal
+      ];
+      
     return {moves, boxes};
 })();
 
+const Player = (player_name, player_letter) => {
+    const name = player_name;
+    const letter = player_letter;
+
+    return {name, letter};
+};
+
 const displayController = (() => {
-    let currentPlayer = 'x';
+    const Player1 = Player('Sam', 'X');
+    const Player2 = Player('Bob', 'O');
+
+    let currentPlayer = Player1;
 
     const switchPlayers = function() {
-        if (currentPlayer === 'x') currentPlayer = 'o';
-        else currentPlayer = 'x';
+        if (currentPlayer === Player1) currentPlayer = Player2;
+        else currentPlayer = Player1;
     }
     
     gameBoard.boxes.forEach(function(box) {
         box.addEventListener('click', function addMark() {
-            gameBoard.moves[box.id] = currentPlayer;
+            gameBoard.moves[box.id] = currentPlayer.letter;
             console.log(gameBoard.moves);
-            box.textContent = currentPlayer;
+            box.textContent = currentPlayer.letter;
             switchPlayers();
             box.removeEventListener('click', addMark);
         })
     })
+    const checkWin = function() {
+        win = true;
+        for (let combo in gameBoard.winningCombinations) {
+            for (index in combo) {
+                if (gameBoard.moves.includes(index)) {
+                
+                }
+                
+            }
+        }
+    }
 })();
 
-const Player = (name, letter) => {
-
-};
-
 //driver script
+
 //gameBoard.displayMoves();
