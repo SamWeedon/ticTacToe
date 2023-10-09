@@ -22,28 +22,30 @@ const gameBoard = (() => {
     
     const winningCombinations = [
         // Horizontal combinations
-        [0, 1, 2], // Top row
-        [3, 4, 5], // Middle row
-        [6, 7, 8], // Bottom row
-      
+        ['0', '1', '2'], // Top row
+        ['3', '4', '5'], // Middle row
+        ['6', '7', '8'], // Bottom row
+
         // Vertical combinations
-        [0, 3, 6], // Left column
-        [1, 4, 7], // Middle column
-        [2, 5, 8], // Right column
-      
+        ['0', '3', '6'], // Left column
+        ['1', '4', '7'], // Middle column
+        ['2', '5', '8'], // Right column
+
         // Diagonal combinations
-        [0, 4, 8], // Top-left to bottom-right diagonal
-        [2, 4, 6]  // Top-right to bottom-left diagonal
+        ['0', '4', '8'], // Top-left to bottom-right diagonal
+        ['2', '4', '6']  // Top-right to bottom-left diagonal
       ];
       
-    return {moves, boxes};
+    return {moves, boxes, winningCombinations};
 })();
 
 const Player = (player_name, player_letter) => {
     const name = player_name;
     const letter = player_letter;
 
-    return {name, letter};
+    let positions = [];
+
+    return {name, letter, positions};
 };
 
 const displayController = (() => {
@@ -62,20 +64,42 @@ const displayController = (() => {
             gameBoard.moves[box.id] = currentPlayer.letter;
             console.log(gameBoard.moves);
             box.textContent = currentPlayer.letter;
+            currentPlayer.positions.push(box.id);
+            console.log(currentPlayer.positions);
+            checkWin(currentPlayer);
             switchPlayers();
             box.removeEventListener('click', addMark);
         })
     })
-    const checkWin = function() {
-        win = true;
-        for (let combo in gameBoard.winningCombinations) {
-            for (index in combo) {
-                if (gameBoard.moves.includes(index)) {
-                
+    const checkWin = function(player) {
+        let win = false;
+        gameBoard.winningCombinations.forEach(function(combo) {
+            let winCounter = 0;
+            combo.forEach(function(position) {
+                if (player.positions.includes(position)) {
+                    winCounter++;
                 }
-                
+                if (winCounter === 3) {
+                    win = true;
+                    console.log(win);
+                }
+            })
+        })
+        /*
+        for (let combo in gameBoard.winningCombinations) {
+            let winCounter = 0;
+            for (let index in combo) {
+                if (player.positions.includes(index)) {
+                    winCounter++;
+                }
+                if (winCounter === 3) {
+                    win = true;
+                    console.log(win);
+                }
             }
+
         }
+        */
     }
 })();
 
