@@ -81,25 +81,28 @@ const displayController = (() => {
                 }
                 if (winCounter === 3) {
                     win = true;
-                    console.log(win);
+                    if (currentPlayer.letter === 'X') {
+                        console.log('x wins');
+                    }
+                    else {
+                        console.log('o wins');
+                    }
+                }
+                else if (checkFullBoard()) {
+                    console.log('tie')
                 }
             })
         })
-        /*
-        for (let combo in gameBoard.winningCombinations) {
-            let winCounter = 0;
-            for (let index in combo) {
-                if (player.positions.includes(index)) {
-                    winCounter++;
-                }
-                if (winCounter === 3) {
-                    win = true;
-                    console.log(win);
-                }
-            }
+    }
 
+    const checkFullBoard = function() {
+        let full = true;
+        for (let square of gameBoard.moves) {
+            if (square == null) {
+                full = false;
+            }
         }
-        */
+        return full;
     }
 })();
 
