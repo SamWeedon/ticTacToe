@@ -54,25 +54,28 @@ const displayController = (() => {
 
     let currentPlayer = Player1;
 
-    const switchPlayers = function() {
+    function switchPlayers() {
         if (currentPlayer === Player1) currentPlayer = Player2;
         else currentPlayer = Player1;
     }
     
+    function addMark(event) {
+        const box = event.target;
+        gameBoard.moves[box.id] = currentPlayer.letter;
+        console.log(gameBoard.moves);
+        box.textContent = currentPlayer.letter;
+        currentPlayer.positions.push(box.id);
+        console.log(currentPlayer.positions);
+        checkWin(currentPlayer);
+        switchPlayers();
+        box.removeEventListener('click', addMark);
+    }
+
     gameBoard.boxes.forEach(function(box) {
-        box.addEventListener('click', function addMark() {
-            gameBoard.moves[box.id] = currentPlayer.letter;
-            console.log(gameBoard.moves);
-            box.textContent = currentPlayer.letter;
-            currentPlayer.positions.push(box.id);
-            console.log(currentPlayer.positions);
-            checkWin(currentPlayer);
-            switchPlayers();
-            box.removeEventListener('click', addMark);
-        })
+        box.addEventListener('click', addMark);
     })
-    
-    const checkWin = function(player) {
+
+    function checkWin(player) {
         let win = false;
         gameBoard.winningCombinations.forEach(function(combo) {
             let winCounter = 0;
@@ -84,19 +87,22 @@ const displayController = (() => {
                     win = true;
                     if (currentPlayer.letter === 'X') {
                         console.log('x wins');
+                        stopGame();
                     }
                     else {
                         console.log('o wins');
+                        stopGame();
                     }
                 }
                 else if (checkFullBoard()) {
                     console.log('tie')
+                    stopGame();
                 }
             })
         })
     }
 
-    const checkFullBoard = function() {
+    function checkFullBoard() {
         let full = true;
         for (let square of gameBoard.moves) {
             if (square == null) {
@@ -104,6 +110,12 @@ const displayController = (() => {
             }
         }
         return full;
+    }
+
+    function stopGame() {
+        gameBoard.boxes.forEach(function(box) {
+            box.removeEventListener('click', addMark);
+        })
     }
 })();
 
