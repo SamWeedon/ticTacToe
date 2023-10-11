@@ -1,4 +1,39 @@
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 60px);
+    grid-template-rows: repeat(3, 60px);
+}
+
 .box {
+    display: flex;
     width: 60px;
     height: 60px;
+    border: 2px solid black;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+}
+
+[id='0'], [id='2'], [id='6'], [id='8'] {
+    border: none;
+}
+
+[id='1'] {
+    border-top: none;
+    border-bottom: none;
+}
+
+[id='3'] {
+    border-left: none;
+    border-right: none;
+}
+
+[id='5'] {
+    border-right: none;
+    border-left: none;
+}
+
+[id='7'] {
+    border-bottom: none;
+    border-top: none;
 }

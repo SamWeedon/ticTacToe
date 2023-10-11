@@ -71,6 +71,7 @@ const displayController = (() => {
             box.removeEventListener('click', addMark);
         })
     })
+    
     const checkWin = function(player) {
         let win = false;
         gameBoard.winningCombinations.forEach(function(combo) {
