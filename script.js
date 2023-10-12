@@ -52,6 +52,8 @@ const displayController = (() => {
     const Player1 = Player('Sam', 'X');
     const Player2 = Player('Bob', 'O');
 
+    const players = [Player1, Player2];
+
     let currentPlayer = Player1;
 
     function switchPlayers() {
@@ -75,6 +77,8 @@ const displayController = (() => {
         box.addEventListener('click', addMark);
     })
 
+    const result = document.getElementById('game-result');
+
     function checkWin(player) {
         let win = false;
         gameBoard.winningCombinations.forEach(function(combo) {
@@ -87,15 +91,18 @@ const displayController = (() => {
                     win = true;
                     if (currentPlayer.letter === 'X') {
                         console.log('x wins');
+                        result.textContent = 'X wins'
                         stopGame();
                     }
                     else {
                         console.log('o wins');
+                        result.textContent = 'O wins'
                         stopGame();
                     }
                 }
                 else if (checkFullBoard()) {
                     console.log('tie')
+                    result.textContent = 'Tie'
                     stopGame();
                 }
             })
@@ -117,6 +124,24 @@ const displayController = (() => {
             box.removeEventListener('click', addMark);
         })
     }
+
+    function restartGame() {
+        currentPlayer = Player1;
+        gameBoard.moves = [null,null,null,
+                            null,null,null,
+                            null,null,null];
+        result.textContent = '';
+        gameBoard.boxes.forEach(function(box) {
+            box.textContent = '';
+            box.addEventListener('click', addMark);
+        })
+        for (let player of players) {
+            player.positions = [];
+        }
+    }
+
+    restartButton = document.querySelector('button');
+    restartButton.addEventListener('click', restartGame);
 })();
 
 //driver script
