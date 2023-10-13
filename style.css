@@ -20,6 +20,10 @@ body {
     align-items: center;
 }
 
+.box:hover {
+    background-color: rgb(239, 245, 247);
+}
+
 [id='0'], [id='2'], [id='6'], [id='8'] {
     border: none;
 }

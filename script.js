@@ -60,30 +60,34 @@ const displayController = (() => {
     const currentPlayerDisplay = document.getElementById('current-player');
     
     function startGame() {
-        startButton.textContent = 'Restart';
-        currentPlayer = Player1;
-        
-
         const player1Name = document.getElementById('player1').value;
         const player2Name = document.getElementById('player2').value;
 
-        Player1.name = player1Name;
-        Player2.name = player2Name;
+        if (player1Name !== '' && player2Name !== '') {
 
-        displayCurrentPlayer();
-        
-        gameBoard.moves = [null,null,null,
-                            null,null,null,
-                            null,null,null];
-        result.textContent = '';
-
-        gameBoard.boxes.forEach(function(box) {
-            box.textContent = '';
-            box.addEventListener('click', addMark);
-        })
-
-        for (let player of players) {
-            player.positions = [];
+            startButton.textContent = 'Restart';
+            
+            Player1.name = player1Name;
+            Player2.name = player2Name;
+            
+    
+            currentPlayer = Player1;
+    
+            displayCurrentPlayer();
+            
+            gameBoard.moves = [null,null,null,
+                                null,null,null,
+                                null,null,null];
+            result.textContent = '';
+    
+            gameBoard.boxes.forEach(function(box) {
+                box.textContent = '';
+                box.addEventListener('click', addMark);
+            })
+    
+            for (let player of players) {
+                player.positions = [];
+            }
         }
     }
 

@@ -11,20 +11,21 @@
 <body>
     <div id="title">Tic Tac Toe</div>
 
-    <form action="">
+    <form action="" onsubmit="return false">
         <div>
             <label for="player1">Player 1 (X):</label>
-            <input type="text" name="" id="player1">
+            <input type="text" name="" id="player1" required>
         </div>
 
         <div>
             <label for="player2">Player 2 (O):</label>
-            <input type="text" name="" id="player2">
+            <input type="text" name="" id="player2"required>
         </div>
 
+        <button type="submit" id="start-button">Start</button>
     </form>
 
-    <button id="start-button">Start</button>
+    
 
     <div id="current-player"></div>
 
