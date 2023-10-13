@@ -39,22 +39,53 @@ const gameBoard = (() => {
     return {moves, boxes, winningCombinations};
 })();
 
-const Player = (player_name, player_letter) => {
-    const name = player_name;
+const Player = (player_letter) => {
     const letter = player_letter;
-
+    let name = '';
     let positions = [];
 
     return {name, letter, positions};
 };
 
 const displayController = (() => {
-    const Player1 = Player('Sam', 'X');
-    const Player2 = Player('Bob', 'O');
 
+    const Player1 = Player('X');
+    const Player2 = Player('O');
     const players = [Player1, Player2];
-
     let currentPlayer = Player1;
+
+    startButton = document.getElementById('start-button');
+    startButton.addEventListener('click', startGame);
+
+    const currentPlayerDisplay = document.getElementById('current-player');
+    
+    function startGame() {
+        startButton.textContent = 'Restart';
+        currentPlayer = Player1;
+        
+
+        const player1Name = document.getElementById('player1').value;
+        const player2Name = document.getElementById('player2').value;
+
+        Player1.name = player1Name;
+        Player2.name = player2Name;
+
+        displayCurrentPlayer();
+        
+        gameBoard.moves = [null,null,null,
+                            null,null,null,
+                            null,null,null];
+        result.textContent = '';
+
+        gameBoard.boxes.forEach(function(box) {
+            box.textContent = '';
+            box.addEventListener('click', addMark);
+        })
+
+        for (let player of players) {
+            player.positions = [];
+        }
+    }
 
     function switchPlayers() {
         if (currentPlayer === Player1) currentPlayer = Player2;
@@ -69,13 +100,13 @@ const displayController = (() => {
         currentPlayer.positions.push(box.id);
         console.log(currentPlayer.positions);
         checkWin(currentPlayer);
-        switchPlayers();
+        if (!checkWin(currentPlayer)) {
+            switchPlayers();
+            displayCurrentPlayer();
+        }
+        
         box.removeEventListener('click', addMark);
     }
-
-    gameBoard.boxes.forEach(function(box) {
-        box.addEventListener('click', addMark);
-    })
 
     const result = document.getElementById('game-result');
 
@@ -101,12 +132,14 @@ const displayController = (() => {
                     }
                 }
                 else if (checkFullBoard()) {
+                    win = true;
                     console.log('tie')
                     result.textContent = 'Tie'
                     stopGame();
                 }
             })
         })
+        return win;
     }
 
     function checkFullBoard() {
@@ -123,25 +156,12 @@ const displayController = (() => {
         gameBoard.boxes.forEach(function(box) {
             box.removeEventListener('click', addMark);
         })
+        currentPlayerDisplay.textContent = '';
     }
 
-    function restartGame() {
-        currentPlayer = Player1;
-        gameBoard.moves = [null,null,null,
-                            null,null,null,
-                            null,null,null];
-        result.textContent = '';
-        gameBoard.boxes.forEach(function(box) {
-            box.textContent = '';
-            box.addEventListener('click', addMark);
-        })
-        for (let player of players) {
-            player.positions = [];
-        }
+    function displayCurrentPlayer() {
+        currentPlayerDisplay.textContent = `${currentPlayer.name}'s turn`
     }
-
-    restartButton = document.querySelector('button');
-    restartButton.addEventListener('click', restartGame);
 })();
 
 //driver script
