@@ -124,6 +124,9 @@ const displayController = (() => {
                 }
                 if (winCounter === 3) {
                     win = true;
+                    result.textContent = `${currentPlayer.name} wins`;
+                    stopGame();
+                    /*
                     if (currentPlayer.letter === 'X') {
                         console.log('x wins');
                         result.textContent = 'X wins'
@@ -134,15 +137,17 @@ const displayController = (() => {
                         result.textContent = 'O wins'
                         stopGame();
                     }
+                    */
                 }
-                else if (checkFullBoard()) {
-                    win = true;
-                    console.log('tie')
-                    result.textContent = 'Tie'
-                    stopGame();
-                }
-            })
-        })
+            });
+        });
+
+        if (!win && checkFullBoard()) {
+            win = true;
+            console.log('tie');
+            result.textContent = 'Tie';
+            stopGame();
+        }
         return win;
     }
 
