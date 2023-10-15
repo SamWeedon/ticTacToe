@@ -1,19 +1,3 @@
-/*
-I need to fit every bit of logic into the game, player, or gameboard
-objects. I also want to keep the DOM and game logic as separate as
-possible. I can accomplish this by making this work in the console
-first.
-
-I can manipulate the array, without yet linking parts of the array
-to the DOM. Then I can link it to the DOM after.
-
-Functionality list:
--Switching turns so I know whether it is 'x' or 'o'
--Storing values in correct board array index on click
--displaying values on board after the fact
--checking for win and tie conditions
-*/
-
 const gameBoard = (() => {
     let moves = [null,null,null,
                  null,null,null,
@@ -44,7 +28,8 @@ const Player = (player_letter) => {
     let name = '';
     let positions = [];
 
-    return {name, letter, positions};
+    let ai = false;
+    return {name, letter, positions, ai};
 };
 
 const displayController = (() => {
@@ -60,10 +45,25 @@ const displayController = (() => {
     const currentPlayerDisplay = document.getElementById('current-player');
     
     function startGame() {
+        
         const player1Name = document.getElementById('player1').value;
         const player2Name = document.getElementById('player2').value;
 
         if (player1Name !== '' && player2Name !== '') {
+            
+            // updates the 'ai' property of each player
+            if (checkbox1.checked) {
+                console.log('1 checked');
+                Player1.ai = true;
+            }
+            else Player1.ai = false;
+
+            if (checkbox2.checked) {
+                console.log('2 checked');
+                Player2.ai = true;
+            }
+            else Player2.ai = false;
+            //
 
             startButton.textContent = 'Restart';
             
@@ -88,6 +88,8 @@ const displayController = (() => {
             for (let player of players) {
                 player.positions = [];
             }
+
+            aiMove();
         }
     }
 
@@ -108,8 +110,10 @@ const displayController = (() => {
             switchPlayers();
             displayCurrentPlayer();
         }
-        
         box.removeEventListener('click', addMark);
+
+        //calls aiMove() with the next player
+        aiMove();
     }
 
     const result = document.getElementById('game-result');
@@ -126,18 +130,6 @@ const displayController = (() => {
                     win = true;
                     result.textContent = `${currentPlayer.name} wins`;
                     stopGame();
-                    /*
-                    if (currentPlayer.letter === 'X') {
-                        console.log('x wins');
-                        result.textContent = 'X wins'
-                        stopGame();
-                    }
-                    else {
-                        console.log('o wins');
-                        result.textContent = 'O wins'
-                        stopGame();
-                    }
-                    */
                 }
             });
         });
@@ -171,8 +163,38 @@ const displayController = (() => {
     function displayCurrentPlayer() {
         currentPlayerDisplay.textContent = `${currentPlayer.name}'s turn`
     }
+
+    // assigns the checkbox elements to variables
+    const checkbox1 = document.getElementById('ai-1');
+    const checkbox2 = document.getElementById('ai-2');
+
+    function aiMove() {
+        /*
+        If the current player is an ai, randomly selects an open square and clicks it
+        */
+        if (currentPlayer.ai == true) {
+            let unoccupiedSquares = [];
+
+            //iterates through the array of 'played' moves and adds the 'unplayed' indices to an array
+            index = 0;
+            for (let square of gameBoard.moves) {
+                if (square == null) {
+                    unoccupiedSquares.push(index);
+                }
+                index++;
+            }
+
+            // selects an open square by first choosing a random index from the array of 'unplayed' indices,
+            // then selecting the square with the corresponding id
+            const randomIndex = Math.floor(Math.random() * unoccupiedSquares.length);
+            const randomSquareIndex = unoccupiedSquares[randomIndex];
+            const randomSquare = document.getElementById(`${randomSquareIndex}`);
+
+            // clicks the square, if it exists
+            if (randomSquare !== null) {
+                randomSquare.click();
+            }
+        }
+    }
+    
 })();
-
-//driver script
-
-//gameBoard.displayMoves();
