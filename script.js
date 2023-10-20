@@ -190,11 +190,55 @@ const displayController = (() => {
             const randomSquareIndex = unoccupiedSquares[randomIndex];
             const randomSquare = document.getElementById(`${randomSquareIndex}`);
 
-            // clicks the square, if it exists
+            // clicks the square, if it exists, after a 50 ms delay
             if (randomSquare !== null) {
-                randomSquare.click();
+                setTimeout(function() {
+                    randomSquare.click();
+                }, 50);
+                
             }
         }
     }
+
+    function score() {
+        if (checkWin(currentPlayer) && currentPlayer === Player1) {
+            return 10;
+        }
+        else if (checkWin(currentPlayer) && currentPlayer === Player2) {
+            return -10;
+        }
+        else return 0;
+    }
     
+    const emptyBoard = [null,null,null,
+                        null,null,null,
+                        null,null,null];
+
+    function miniMax(gameState) {
+        // base case
+        if (checkWin(currentPlayer)) return score();
+
+        let scores = [];
+        let moves = [];
+
+        for (let state of getAvailableStates(gameState)) {
+            scores.push(miniMax(state));
+        }
+    }
+
+    function getAvailableStates(currentState) {
+        let availableStates = [];
+        //const currentLetter = currentPlayer.letter;
+        const currentLetter = 'x';
+        for (let i = 0; i < currentState.length; i++) {
+            if (currentState[i] === null) {
+                const availableState = currentState.slice();
+                availableState[i] = currentLetter;
+                availableStates.push(availableState);
+            }
+        }
+        return availableStates;
+    }
+    console.log(getAvailableStates([null, null, null, null, null, null, null, null, null]));
 })();
+
