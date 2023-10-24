@@ -226,6 +226,29 @@ const displayController = (() => {
             scores.push(miniMax(possibleState));
             moves.push(move);
         }
+
+        //maximizing calculation
+        if (currentPlayer === Player1) {
+            const maxScore = Math.max(...scores);
+            const maxScoreIndex = scores.indexOf(maxScore);
+            /*
+            for (let i = 0; i < scores.length; i++) {
+                if (scores[i] === maxScore) {
+                    const maxScoreIndex = i;
+                }          
+            }
+            */
+            const choice = moves[maxScoreIndex];
+            return maxScore;
+        }
+
+        //minimizing calculation
+        else {
+            const minScore = Math.min(...scores);
+            const minScoreIndex = scores.indexOf(minScore);
+            const choice = moves[minScoreIndex];
+            return minScore;
+        }
     }
 
     function getNewState(currentState, move) {
@@ -242,7 +265,7 @@ const displayController = (() => {
     console.log(getNewState([null, null, null, null, null, null, null, null, null], 3));
 
     function getAvailableMoves(currentState) {
-        
+
         // a list of available indexes to move to
         let availableMoves = [];
 
