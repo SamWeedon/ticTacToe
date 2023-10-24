@@ -27,9 +27,10 @@ const Player = (player_letter) => {
     const letter = player_letter;
     let name = '';
     let positions = [];
+    let nextMove = null;
 
     let ai = false;
-    return {name, letter, positions, ai};
+    return {name, letter, positions, ai, nextMove};
 };
 
 const displayController = (() => {
@@ -238,7 +239,7 @@ const displayController = (() => {
                 }          
             }
             */
-            const choice = moves[maxScoreIndex];
+            currentPlayer.nextMove = moves[maxScoreIndex];
             return maxScore;
         }
 
@@ -246,7 +247,7 @@ const displayController = (() => {
         else {
             const minScore = Math.min(...scores);
             const minScoreIndex = scores.indexOf(minScore);
-            const choice = moves[minScoreIndex];
+            currentPlayer.nextMove = moves[minScoreIndex];
             return minScore;
         }
     }
