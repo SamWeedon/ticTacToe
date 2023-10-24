@@ -221,24 +221,40 @@ const displayController = (() => {
         let scores = [];
         let moves = [];
 
-        for (let state of getAvailableStates(gameState)) {
-            scores.push(miniMax(state));
+        for (let move of getAvailableMoves(gameState)) {
+            let possibleState = getNewState(gameState, move);
+            scores.push(miniMax(possibleState));
+            moves.push(move);
         }
     }
 
-    function getAvailableStates(currentState) {
-        let availableStates = [];
+    function getNewState(currentState, move) {
+
         //const currentLetter = currentPlayer.letter;
         const currentLetter = 'x';
+
+        // create a new state where the given index is filled with the current letter
+        let newState = currentState.slice();
+        newState[move] = currentLetter;
+
+        return newState;
+    }
+    console.log(getNewState([null, null, null, null, null, null, null, null, null], 3));
+
+    function getAvailableMoves(currentState) {
+        
+        // a list of available indexes to move to
+        let availableMoves = [];
+
+        // iterate through each board position, and if the position is empty,
+        // add that index to the list of available moves
         for (let i = 0; i < currentState.length; i++) {
             if (currentState[i] === null) {
-                const availableState = currentState.slice();
-                availableState[i] = currentLetter;
-                availableStates.push(availableState);
+                availableMoves.push(i);
             }
         }
-        return availableStates;
+        return availableMoves;
     }
-    console.log(getAvailableStates([null, null, null, null, null, null, null, null, null]));
+    console.log(getAvailableMoves([null, null, null, null, null, null, null, 'x', null]));
 })();
 
