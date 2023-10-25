@@ -201,6 +201,27 @@ const displayController = (() => {
         }
     }
 
+    function miniMaxAiMove() {
+        // My goal here is to get the index of the best move so I can click it's corresponding square
+        
+        if (currentPlayer.ai == true) {
+
+            // reveals the best move's index
+            miniMax(gameBoard.moves);
+
+            // chooses the corresponding square
+            const bestSquareIndex = currentPlayer.nextMove;
+            const bestSquare = document.getElementById(`${bestSquareIndex}`);
+
+            // clicks the square
+            if (bestSquare !== null) {
+                setTimeout(function() {
+                    bestSquare.click();
+                }, 50);
+            }
+        }
+    }
+
     function score() {
         if (checkWin(currentPlayer) && currentPlayer === Player1) {
             return 10;
