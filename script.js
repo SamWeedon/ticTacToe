@@ -207,7 +207,7 @@ const displayController = (() => {
         if (currentPlayer.ai == true) {
 
             // reveals the best move's index
-            miniMax(gameBoard.moves);
+            miniMax(gameBoard.moves, currentPlayer.letter);
 
             // chooses the corresponding square
             const bestSquareIndex = currentPlayer.nextMove;
@@ -222,11 +222,56 @@ const displayController = (() => {
         }
     }
 
-    function score() {
-        if (checkWin(currentPlayer) && currentPlayer === Player1) {
+    function simulatedWin(board, playerLetter) {
+        let positions = [];
+        
+        // populates positions array
+        for (let i=0; i < board.length; i++) {
+            
+            if (playerLetter === 'X') {
+                if (board[i] === 'X') {
+                    positions.push(i);
+                }
+            }
+            else {
+                if (board[i] === 'O') {
+                    positions.push(i);
+                }
+            }
+        }
+
+        let win = false;
+        gameBoard.winningCombinations.forEach(function(combo) {
+            let winCounter = 0;
+            combo.forEach(function(position) {
+                if (positions.includes(position)) {
+                    winCounter++;
+                }
+                if (winCounter === 3) {
+                    win = true;
+                }
+            });
+        });
+
+        return win;
+    }
+
+    function gameOver(board) {
+        // checks for a full board
+        let full = true;
+        for (let position of board) {
+            if (position === null) {
+                full = false;
+            }
+        }
+        return full;
+    }
+
+    function score(board, playerLetter) {
+        if (simulatedWin(board, playerLetter) && playerLetter === 'X') {
             return 10;
         }
-        else if (checkWin(currentPlayer) && currentPlayer === Player2) {
+        else if (simulatedWin(board, playerLetter) && playerLetter === 'O') {
             return -10;
         }
         else return 0;
@@ -236,30 +281,23 @@ const displayController = (() => {
                         null,null,null,
                         null,null,null];
 
-    function miniMax(gameState) {
+    function miniMax(gameState, playerLetter) {
         // base case
-        if (checkWin(currentPlayer)) return score();
+        if (gameOver(gameState)) return score(gameState, playerLetter);
 
         let scores = [];
         let moves = [];
 
         for (let move of getAvailableMoves(gameState)) {
-            let possibleState = getNewState(gameState, move);
-            scores.push(miniMax(possibleState));
+            let possibleState = getNewState(gameState, move, playerLetter);
+            scores.push(miniMax(possibleState, playerLetter));
             moves.push(move);
         }
 
         //maximizing calculation
-        if (currentPlayer === Player1) {
+        if (playerLetter === 'X') {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
-            /*
-            for (let i = 0; i < scores.length; i++) {
-                if (scores[i] === maxScore) {
-                    const maxScoreIndex = i;
-                }          
-            }
-            */
             currentPlayer.nextMove = moves[maxScoreIndex];
             return maxScore;
         }
@@ -273,14 +311,11 @@ const displayController = (() => {
         }
     }
 
-    function getNewState(currentState, move) {
-
-        //const currentLetter = currentPlayer.letter;
-        const currentLetter = 'x';
+    function getNewState(currentState, move, playerLetter) {
 
         // create a new state where the given index is filled with the current letter
         let newState = currentState.slice();
-        newState[move] = currentLetter;
+        newState[move] = playerLetter;
 
         return newState;
     }
