@@ -207,7 +207,13 @@ const displayController = (() => {
         if (currentPlayer.ai == true) {
 
             // reveals the best move's index
-            miniMax(gameBoard.moves, currentPlayer.letter);
+            if (currentPlayer.letter === 'X') {
+                let nextPlayerLetter = 'O';
+            }
+            else {
+                let nextPlayerLetter = 'X';
+            }
+            miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter);
 
             // chooses the corresponding square
             const bestSquareIndex = currentPlayer.nextMove;
@@ -276,26 +282,22 @@ const displayController = (() => {
         }
         else return 0;
     }
-    
-    const emptyBoard = [null,null,null,
-                        null,null,null,
-                        null,null,null];
 
-    function miniMax(gameState, playerLetter) {
+    function miniMax(gameState, currentPlayerLetter, nextPlayerLetter) {
         // base case
-        if (gameOver(gameState)) return score(gameState, playerLetter);
+        if (gameOver(gameState)) return score(gameState, currentPlayerLetter);
 
         let scores = [];
         let moves = [];
 
         for (let move of getAvailableMoves(gameState)) {
-            let possibleState = getNewState(gameState, move, playerLetter);
-            scores.push(miniMax(possibleState, playerLetter));
+            let possibleState = getNewState(gameState, move, currentPlayerLetter);
+            scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter));
             moves.push(move);
         }
 
         //maximizing calculation
-        if (playerLetter === 'X') {
+        if (currentPlayerLetter === 'X') {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
             currentPlayer.nextMove = moves[maxScoreIndex];
