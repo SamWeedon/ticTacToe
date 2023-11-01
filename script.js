@@ -206,17 +206,18 @@ const displayController = (() => {
         
         if (currentPlayer.ai == true) {
 
+            let nextPlayerLetter;
+            
             // reveals the best move's index
             if (currentPlayer.letter === 'X') {
-                let nextPlayerLetter = 'O';
+                nextPlayerLetter = 'O';
             }
             else {
-                let nextPlayerLetter = 'X';
+                nextPlayerLetter = 'X';
             }
-            miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter);
+            const bestSquareIndex = miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter)[1];
 
             // chooses the corresponding square
-            const bestSquareIndex = currentPlayer.nextMove;
             const bestSquare = document.getElementById(`${bestSquareIndex}`);
 
             // clicks the square
@@ -292,7 +293,7 @@ const displayController = (() => {
 
         for (let move of getAvailableMoves(gameState)) {
             let possibleState = getNewState(gameState, move, currentPlayerLetter);
-            scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter));
+            scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter)[0]);
             moves.push(move);
         }
 
@@ -300,16 +301,16 @@ const displayController = (() => {
         if (currentPlayerLetter === 'X') {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
-            currentPlayer.nextMove = moves[maxScoreIndex];
-            return maxScore;
+            nextMove = moves[maxScoreIndex];
+            return [maxScore, nextMove];
         }
 
         //minimizing calculation
         else {
             const minScore = Math.min(...scores);
             const minScoreIndex = scores.indexOf(minScore);
-            currentPlayer.nextMove = moves[minScoreIndex];
-            return minScore;
+            nextMove = moves[minScoreIndex];
+            return [minScore, nextMove];
         }
     }
 
