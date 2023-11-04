@@ -263,7 +263,7 @@ const displayController = (() => {
         return win;
     }
 
-    function gameOver(board) {
+    function fullBoard(board) {
         // checks for a full board
         let full = true;
         for (let position of board) {
@@ -286,7 +286,7 @@ const displayController = (() => {
 
     function miniMax(gameState, currentPlayerLetter, nextPlayerLetter) {
         // base case
-        if (gameOver(gameState)) return [score(gameState, nextPlayerLetter)];
+        if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter)];
 
         let scores = [];
         let moves = [];
