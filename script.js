@@ -207,7 +207,7 @@ const displayController = (() => {
         if (currentPlayer.ai == true) {
 
             let nextPlayerLetter;
-            
+
             // reveals the best move's index
             if (currentPlayer.letter === 'X') {
                 nextPlayerLetter = 'O';
@@ -237,12 +237,12 @@ const displayController = (() => {
             
             if (playerLetter === 'X') {
                 if (board[i] === 'X') {
-                    positions.push(i);
+                    positions.push(String(i));
                 }
             }
             else {
                 if (board[i] === 'O') {
-                    positions.push(i);
+                    positions.push(String(i));
                 }
             }
         }
@@ -286,7 +286,7 @@ const displayController = (() => {
 
     function miniMax(gameState, currentPlayerLetter, nextPlayerLetter) {
         // base case
-        if (gameOver(gameState)) return score(gameState, currentPlayerLetter);
+        if (gameOver(gameState)) return [score(gameState, nextPlayerLetter)];
 
         let scores = [];
         let moves = [];
@@ -301,7 +301,7 @@ const displayController = (() => {
         if (currentPlayerLetter === 'X') {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
-            nextMove = moves[maxScoreIndex];
+            let nextMove = moves[maxScoreIndex];
             return [maxScore, nextMove];
         }
 
@@ -309,7 +309,7 @@ const displayController = (() => {
         else {
             const minScore = Math.min(...scores);
             const minScoreIndex = scores.indexOf(minScore);
-            nextMove = moves[minScoreIndex];
+            let nextMove = moves[minScoreIndex];
             return [minScore, nextMove];
         }
     }
@@ -322,7 +322,7 @@ const displayController = (() => {
 
         return newState;
     }
-    console.log(getNewState([null, null, null, null, null, null, null, null, null], 3));
+    //console.log(getNewState([null, null, null, null, null, null, null, null, null], 3, 'X'));
 
     function getAvailableMoves(currentState) {
 
@@ -338,6 +338,11 @@ const displayController = (() => {
         }
         return availableMoves;
     }
-    console.log(getAvailableMoves([null, null, null, null, null, null, null, 'x', null]));
+    //console.log(getAvailableMoves([null, null, null, null, null, null, null, 'X', null]));
+
+    // . . .   X's turn. miniMax should pick index 8 for the best move if working correctly.
+    // . o o
+    // x x .
+    console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O'));
 })();
 
