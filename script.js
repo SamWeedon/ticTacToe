@@ -40,7 +40,7 @@ const displayController = (() => {
     const players = [Player1, Player2];
     let currentPlayer = Player1;
 
-    startButton = document.getElementById('start-button');
+    let startButton = document.getElementById('start-button');
     startButton.addEventListener('click', startGame);
 
     const currentPlayerDisplay = document.getElementById('current-player');
@@ -90,7 +90,7 @@ const displayController = (() => {
                 player.positions = [];
             }
 
-            aiMove();
+            miniMaxAiMove();
         }
     }
 
@@ -114,7 +114,7 @@ const displayController = (() => {
         box.removeEventListener('click', addMark);
 
         //calls aiMove() with the next player
-        aiMove();
+        miniMaxAiMove();
     }
 
     const result = document.getElementById('game-result');
@@ -286,7 +286,7 @@ const displayController = (() => {
 
     function miniMax(gameState, currentPlayerLetter, nextPlayerLetter) {
         // base case
-        if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter)];
+        if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter), null];
 
         let scores = [];
         let moves = [];
@@ -302,6 +302,10 @@ const displayController = (() => {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
             let nextMove = moves[maxScoreIndex];
+            //console.log(maxScore, nextMove, currentPlayerLetter);
+            //console.log(gameState);
+            //console.log(scores);
+            //console.log(moves);
             return [maxScore, nextMove];
         }
 
@@ -310,6 +314,10 @@ const displayController = (() => {
             const minScore = Math.min(...scores);
             const minScoreIndex = scores.indexOf(minScore);
             let nextMove = moves[minScoreIndex];
+            //console.log(minScore, nextMove, currentPlayerLetter);
+            //console.log(gameState);
+            //console.log(scores);
+            //console.log(moves);
             return [minScore, nextMove];
         }
     }
@@ -344,5 +352,7 @@ const displayController = (() => {
     // . o o
     // x x .
     console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O'));
+    //console.log(miniMax(['X', 'O', 'X', null, null, 'O', 'X', 'X', 'O'], 'O', 'X'));
+    //console.log(miniMax([null, null, null, null, null, null, null, 'X', null], 'O', 'X'));
 })();
 
