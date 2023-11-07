@@ -29,8 +29,8 @@ const Player = (player_letter) => {
     let positions = [];
     let nextMove = null;
 
-    let ai = false;
-    return {name, letter, positions, ai, nextMove};
+    let difficulty = 'none';
+    return {name, letter, positions, nextMove, difficulty};
 };
 
 const displayController = (() => {
@@ -44,27 +44,21 @@ const displayController = (() => {
     startButton.addEventListener('click', startGame);
 
     const currentPlayerDisplay = document.getElementById('current-player');
-    
+
+    // assigns the dropdown elements to variables
+    const difficulty1 = document.getElementById('difficulty-1');
+    const difficulty2 = document.getElementById('difficulty-2');
+
     function startGame() {
         
         const player1Name = document.getElementById('player1').value;
         const player2Name = document.getElementById('player2').value;
 
-        if (player1Name !== '' && player2Name !== '') {
-            
-            // updates the 'ai' property of each player
-            if (checkbox1.checked) {
-                console.log('1 checked');
-                Player1.ai = true;
-            }
-            else Player1.ai = false;
 
-            if (checkbox2.checked) {
-                console.log('2 checked');
-                Player2.ai = true;
-            }
-            else Player2.ai = false;
-            //
+        if (player1Name !== '' && player2Name !== '') {
+
+            Player1.difficulty = difficulty1.value;
+            Player2.difficulty = difficulty2.value;
 
             startButton.textContent = 'Restart';
             
@@ -90,7 +84,7 @@ const displayController = (() => {
                 player.positions = [];
             }
 
-            miniMaxAiMove();
+            miniMaxMove();
         }
     }
 
@@ -114,7 +108,7 @@ const displayController = (() => {
         box.removeEventListener('click', addMark);
 
         //calls aiMove() with the next player
-        miniMaxAiMove();
+        miniMaxMove();
     }
 
     const result = document.getElementById('game-result');
@@ -165,15 +159,11 @@ const displayController = (() => {
         currentPlayerDisplay.textContent = `${currentPlayer.name}'s turn`
     }
 
-    // assigns the checkbox elements to variables
-    const checkbox1 = document.getElementById('ai-1');
-    const checkbox2 = document.getElementById('ai-2');
-
-    function aiMove() {
+    function randomMove() {
         /*
         If the current player is an ai, randomly selects an open square and clicks it
         */
-        if (currentPlayer.ai == true) {
+        if (currentPlayer.difficulty !== 'none') {
             let unoccupiedSquares = [];
 
             //iterates through the array of 'played' moves and adds the 'unplayed' indices to an array
@@ -201,10 +191,10 @@ const displayController = (() => {
         }
     }
 
-    function miniMaxAiMove() {
+    function miniMaxMove() {
         // My goal here is to get the index of the best move so I can click it's corresponding square
         
-        if (currentPlayer.ai == true) {
+        if (currentPlayer.difficulty !== 'none') {
 
             let nextPlayerLetter;
 
@@ -289,7 +279,7 @@ const displayController = (() => {
         if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter, depth), null];
 
         depth++;
-        
+
         let scores = [];
         let moves = [];
 
