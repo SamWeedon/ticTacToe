@@ -84,7 +84,7 @@ const displayController = (() => {
                 player.positions = [];
             }
 
-            miniMaxMove();
+            chooseMove();
         }
     }
 
@@ -108,7 +108,7 @@ const displayController = (() => {
         box.removeEventListener('click', addMark);
 
         //calls aiMove() with the next player
-        miniMaxMove();
+        chooseMove();
     }
 
     const result = document.getElementById('game-result');
@@ -191,9 +191,43 @@ const displayController = (() => {
         }
     }
 
+    function probabilityOfTrue(probability) {
+        let boolean = false;
+        const randomValue = Math.random();
+        if (randomValue < probability) {
+            boolean = true;
+        }
+        return boolean;
+    }
+
+    function chooseMove() {
+        if (currentPlayer.difficulty == 'easy') {
+            randomMove();
+        }
+        else if (currentPlayer.difficulty == 'medium') {
+            if (probabilityOfTrue(0.5)) {
+                miniMaxMove();
+            }
+            else {
+                randomMove();
+            }
+        }
+        else if (currentPlayer.difficulty == 'hard') {
+            if (probabilityOfTrue(0.80)) {
+                miniMaxMove();
+            }
+            else {
+                randomMove();
+            }
+        }
+        else if (currentPlayer.difficulty == 'impossible') {
+            miniMaxMove();
+        }
+    }
+
     function miniMaxMove() {
         // My goal here is to get the index of the best move so I can click it's corresponding square
-        
+             
         if (currentPlayer.difficulty !== 'none') {
 
             let nextPlayerLetter;
