@@ -215,7 +215,7 @@ const displayController = (() => {
             else {
                 nextPlayerLetter = 'X';
             }
-            const bestSquareIndex = miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter)[1];
+            const bestSquareIndex = miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter, 0)[1];
 
             // chooses the corresponding square
             const bestSquare = document.getElementById(`${bestSquareIndex}`);
@@ -274,26 +274,28 @@ const displayController = (() => {
         return full;
     }
 
-    function score(board, playerLetter) {
+    function score(board, playerLetter, depth) {
         if (simulatedWin(board, playerLetter) && playerLetter === 'X') {
-            return 10;
+            return 10 - depth;
         }
         else if (simulatedWin(board, playerLetter) && playerLetter === 'O') {
-            return -10;
+            return depth -10;
         }
         else return 0;
     }
 
-    function miniMax(gameState, currentPlayerLetter, nextPlayerLetter) {
+    function miniMax(gameState, currentPlayerLetter, nextPlayerLetter, depth) {
         // base case
-        if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter), null];
+        if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter, depth), null];
 
+        depth++;
+        
         let scores = [];
         let moves = [];
 
         for (let move of getAvailableMoves(gameState)) {
             let possibleState = getNewState(gameState, move, currentPlayerLetter);
-            scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter)[0]);
+            scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter, depth)[0]);
             moves.push(move);
         }
 
@@ -351,7 +353,7 @@ const displayController = (() => {
     // . . .   X's turn. miniMax should pick index 8 for the best move if working correctly.
     // . o o
     // x x .
-    console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O'));
+    console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O', 0));
     //console.log(miniMax(['X', 'O', 'X', null, null, 'O', 'X', 'X', 'O'], 'O', 'X'));
     //console.log(miniMax([null, null, null, null, null, null, null, 'X', null], 'O', 'X'));
 })();
