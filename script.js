@@ -1,9 +1,14 @@
 const gameBoard = (() => {
+
+    // represents a tic-tac-toe board
     let moves = [null,null,null,
                  null,null,null,
                  null,null,null];
+
+    // the 'boxes' of the board in the DOM
     const boxes = document.querySelectorAll('.box');
     
+    // combinations of three-in-a-row based on their respective indices in the board
     const winningCombinations = [
         // Horizontal combinations
         ['0', '1', '2'], // Top row
@@ -24,39 +29,45 @@ const gameBoard = (() => {
 })();
 
 const Player = (player_letter) => {
+    // represents a player in the game of tic-tac-toe
+
     const letter = player_letter;
     let name = '';
-    let positions = [];
-    let nextMove = null;
-
-    let difficulty = 'none';
-    return {name, letter, positions, nextMove, difficulty};
+    let positions = []; // an array of the indices the player occupies
+    let difficulty = 'none'; // the difficulty of the AI, if enabled
+    return {name, letter, positions, difficulty};
 };
 
 const displayController = (() => {
+    // controls all logic for moves and their display in the DOM
 
+    // creates two player objects
     const Player1 = Player('X');
     const Player2 = Player('O');
     const players = [Player1, Player2];
     let currentPlayer = Player1;
-
+    
+    // adds an event listener to the 'start' button in the DOM
     let startButton = document.getElementById('start-button');
     startButton.addEventListener('click', startGame);
 
+    // the part of the DOM that shows the current player's name
     const currentPlayerDisplay = document.getElementById('current-player');
 
-    // assigns the dropdown elements to variables
+    // assigns the dropdown elements for difficulty choice to variables
     const difficulty1 = document.getElementById('difficulty-1');
     const difficulty2 = document.getElementById('difficulty-2');
 
     function startGame() {
-        
+        // called when the user clicks the 'start' or 'restart' button in the DOM
+
+        // gets the player names from the user input in the DOM
         const player1Name = document.getElementById('player1').value;
         const player2Name = document.getElementById('player2').value;
 
+        if (player1Name !== '' && player2Name !== '') { // if the players' names have been entered
 
-        if (player1Name !== '' && player2Name !== '') {
-
+            // get the AI difficulty from the DOM
             Player1.difficulty = difficulty1.value;
             Player2.difficulty = difficulty2.value;
 
@@ -65,25 +76,28 @@ const displayController = (() => {
             Player1.name = player1Name;
             Player2.name = player2Name;
             
-    
             currentPlayer = Player1;
     
             displayCurrentPlayer();
             
+            // resets the board positions
             gameBoard.moves = [null,null,null,
                                 null,null,null,
                                 null,null,null];
             result.textContent = '';
-    
+            
+            // resets the board in the DOM
             gameBoard.boxes.forEach(function(box) {
                 box.textContent = '';
-                box.addEventListener('click', addMark);
+                box.addEventListener('click', handleBoxClick);
             })
-    
+            
+            //resets the Player positions
             for (let player of players) {
                 player.positions = [];
             }
 
+            // executes an AI move if applicable
             chooseMove();
         }
     }
@@ -93,27 +107,35 @@ const displayController = (() => {
         else currentPlayer = Player1;
     }
     
-    function addMark(event) {
+    function handleBoxClick(event) {
+
+        // the box that was clicked
         const box = event.target;
+
+        // updates the gameboard and Player positions
         gameBoard.moves[box.id] = currentPlayer.letter;
-        console.log(gameBoard.moves);
-        box.textContent = currentPlayer.letter;
         currentPlayer.positions.push(box.id);
-        console.log(currentPlayer.positions);
-        checkWin(currentPlayer);
+
+        // updates the board display in the DOM
+        box.textContent = currentPlayer.letter;
+        
+        // if there is no win, switch players etc.
         if (!checkWin(currentPlayer)) {
             switchPlayers();
             displayCurrentPlayer();
         }
-        box.removeEventListener('click', addMark);
+        box.removeEventListener('click', handleBoxClick);
 
-        //calls aiMove() with the next player
+        // executes an AI move for the next player if applicable
         chooseMove();
     }
 
+    // gets the DOM element that contains the game result
     const result = document.getElementById('game-result');
 
     function checkWin(player) {
+
+        // checks for a match between the the 'winning positions' and the player's positions
         let win = false;
         gameBoard.winningCombinations.forEach(function(combo) {
             let winCounter = 0;
@@ -129,19 +151,21 @@ const displayController = (() => {
             });
         });
 
-        if (!win && checkFullBoard()) {
+        // checks for 'tie' conditions (a full board and no win)
+        if (!win && fullBoard(gameBoard.moves)) {
             win = true;
-            console.log('tie');
             result.textContent = 'Tie';
             stopGame();
         }
+
         return win;
     }
 
-    function checkFullBoard() {
+    function fullBoard(board) {
+        // checks for a full board
         let full = true;
-        for (let square of gameBoard.moves) {
-            if (square == null) {
+        for (let position of board) {
+            if (position === null) {
                 full = false;
             }
         }
@@ -149,8 +173,10 @@ const displayController = (() => {
     }
 
     function stopGame() {
+        // stops the game from continuing
+
         gameBoard.boxes.forEach(function(box) {
-            box.removeEventListener('click', addMark);
+            box.removeEventListener('click', handleBoxClick);
         })
         currentPlayerDisplay.textContent = '';
     }
@@ -160,13 +186,12 @@ const displayController = (() => {
     }
 
     function randomMove() {
-        /*
-        If the current player is an ai, randomly selects an open square and clicks it
-        */
+        //Randomly selects an open square and clicks it
+
         if (currentPlayer.difficulty !== 'none') {
             let unoccupiedSquares = [];
 
-            //iterates through the array of 'played' moves and adds the 'unplayed' indices to an array
+            //iterates through the array of moves and adds the 'unplayed' indices to an array
             index = 0;
             for (let square of gameBoard.moves) {
                 if (square == null) {
@@ -185,60 +210,26 @@ const displayController = (() => {
             if (randomSquare !== null) {
                 setTimeout(function() {
                     randomSquare.click();
-                }, 50);
-                
+                }, 50);            
             }
-        }
-    }
-
-    function probabilityOfTrue(probability) {
-        let boolean = false;
-        const randomValue = Math.random();
-        if (randomValue < probability) {
-            boolean = true;
-        }
-        return boolean;
-    }
-
-    function chooseMove() {
-        if (currentPlayer.difficulty == 'easy') {
-            randomMove();
-        }
-        else if (currentPlayer.difficulty == 'medium') {
-            if (probabilityOfTrue(0.5)) {
-                miniMaxMove();
-            }
-            else {
-                randomMove();
-            }
-        }
-        else if (currentPlayer.difficulty == 'hard') {
-            if (probabilityOfTrue(0.80)) {
-                miniMaxMove();
-            }
-            else {
-                randomMove();
-            }
-        }
-        else if (currentPlayer.difficulty == 'impossible') {
-            miniMaxMove();
         }
     }
 
     function miniMaxMove() {
-        // My goal here is to get the index of the best move so I can click it's corresponding square
+        // Gets the index of the best move and clicks its corresponding square
              
         if (currentPlayer.difficulty !== 'none') {
 
             let nextPlayerLetter;
 
-            // reveals the best move's index
             if (currentPlayer.letter === 'X') {
                 nextPlayerLetter = 'O';
             }
             else {
                 nextPlayerLetter = 'X';
             }
+
+            // reveals the best move's index
             const bestSquareIndex = miniMax(gameBoard.moves, currentPlayer.letter, nextPlayerLetter, 0)[1];
 
             // chooses the corresponding square
@@ -253,7 +244,49 @@ const displayController = (() => {
         }
     }
 
+    function returnTrueWithProbability(probability) {
+        // returns true with the given probability. Otherwise returns false
+
+        let boolean = false;
+        const randomValue = Math.random();
+        if (randomValue < probability) {
+            boolean = true;
+        }
+        return boolean;
+    }
+
+    function chooseMove() {
+        // increases the probability of a move using the minimax algorithm as opposed to a random move,
+        // in accord with the AI difficulty level
+
+        if (currentPlayer.difficulty == 'easy') {
+            randomMove();
+        }
+        else if (currentPlayer.difficulty == 'medium') {
+            if (returnTrueWithProbability(0.5)) {
+                miniMaxMove();
+            }
+            else {
+                randomMove();
+            }
+        }
+        else if (currentPlayer.difficulty == 'hard') {
+            if (returnTrueWithProbability(0.80)) {
+                miniMaxMove();
+            }
+            else {
+                randomMove();
+            }
+        }
+        else if (currentPlayer.difficulty == 'impossible') {
+            miniMaxMove();
+        }
+    }
+
     function simulatedWin(board, playerLetter) {
+        // uses the same logic as 'checkWin()' but with the 'simulated board' in the minimax
+        // algorithm as opposed to the actual board represented in the DOM
+
         let positions = [];
         
         // populates positions array
@@ -287,36 +320,47 @@ const displayController = (() => {
         return win;
     }
 
-    function fullBoard(board) {
-        // checks for a full board
-        let full = true;
-        for (let position of board) {
-            if (position === null) {
-                full = false;
-            }
-        }
-        return full;
-    }
-
     function score(board, playerLetter, depth) {
+        // Returns the score from the "maximizing-player" (X) perspective. The score
+        // is modulated by the "depth" or number of moves until the win or loss from the initial move.
+        // The greater the depth, the worse for the maximizing player, because it means more moves
+        // until a win. This is useful in an instance where two separate move choices would both lead
+        // to the same outcome (a win or loss) but one will get there faster. The maximizing player
+        // wishes to reach a win as fast as possible while the minimizing player wishes to prolong
+        // the game as much as possible if they cannot win. Depth does not influence the outcome of the game,
+        // but rather the speed with which a conclusion is reached.
+
         if (simulatedWin(board, playerLetter) && playerLetter === 'X') {
             return 10 - depth;
         }
         else if (simulatedWin(board, playerLetter) && playerLetter === 'O') {
-            return depth -10;
+            return depth - 10;
         }
         else return 0;
     }
 
     function miniMax(gameState, currentPlayerLetter, nextPlayerLetter, depth) {
-        // base case
+        // The minimax algorithm is a brute-force algorithm that can be used to choose the best move in 
+        // solved, turn-taking games such as tic-tac-toe. It works by employing the concept of a "maximizing"
+        // player and a "minimizing" player. The maximizing player seeks to maximize their score while the 
+        // minimizing player seeks to minimize their opponents score. Thus, when viewed only from the maximizing
+        // player's perspective, the minimizing player seeks to MINImize the MAXimum score, hence the name minimax.
+        // The algorithm works recursively, with each recursion revealing the score of a new game state, until all
+        // possible game states and their respective scores are revealed. In this way, the algorithm can choose which 
+        // move will lead to the highest score (when it is maximizing player's turn) and which will lead to the lowest
+        // score (when it is the minimizing player's turn). For this program, I have chosen X as the maximizing player.
+
+        // if the game is over, return the score
         if (fullBoard(gameState) || simulatedWin(gameState, nextPlayerLetter)) return [score(gameState, nextPlayerLetter, depth), null];
 
+        // update the depth of the current game state
         depth++;
 
-        let scores = [];
-        let moves = [];
+        let scores = []; // a list of all possible scores after all possible moves
+        let moves = []; // a list of all possible moves
 
+        // for all availables moves, updates the scores list by recursively calling miniMax with the players switched.
+        // Then, updates the moves list so that the indices of the scores and their respective moves match up.
         for (let move of getAvailableMoves(gameState)) {
             let possibleState = getNewState(gameState, move, currentPlayerLetter);
             scores.push(miniMax(possibleState, nextPlayerLetter, currentPlayerLetter, depth)[0]);
@@ -327,24 +371,16 @@ const displayController = (() => {
         if (currentPlayerLetter === 'X') {
             const maxScore = Math.max(...scores);
             const maxScoreIndex = scores.indexOf(maxScore);
-            let nextMove = moves[maxScoreIndex];
-            //console.log(maxScore, nextMove, currentPlayerLetter);
-            //console.log(gameState);
-            //console.log(scores);
-            //console.log(moves);
-            return [maxScore, nextMove];
+            let bestMove = moves[maxScoreIndex];
+            return [maxScore, bestMove];
         }
 
         //minimizing calculation
         else {
             const minScore = Math.min(...scores);
             const minScoreIndex = scores.indexOf(minScore);
-            let nextMove = moves[minScoreIndex];
-            //console.log(minScore, nextMove, currentPlayerLetter);
-            //console.log(gameState);
-            //console.log(scores);
-            //console.log(moves);
-            return [minScore, nextMove];
+            let bestMove = moves[minScoreIndex];
+            return [minScore, bestMove];
         }
     }
 
@@ -356,7 +392,6 @@ const displayController = (() => {
 
         return newState;
     }
-    //console.log(getNewState([null, null, null, null, null, null, null, null, null], 3, 'X'));
 
     function getAvailableMoves(currentState) {
 
@@ -372,13 +407,10 @@ const displayController = (() => {
         }
         return availableMoves;
     }
-    //console.log(getAvailableMoves([null, null, null, null, null, null, null, 'X', null]));
 
     // . . .   X's turn. miniMax should pick index 8 for the best move if working correctly.
     // . o o
     // x x .
-    console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O', 0));
-    //console.log(miniMax(['X', 'O', 'X', null, null, 'O', 'X', 'X', 'O'], 'O', 'X'));
-    //console.log(miniMax([null, null, null, null, null, null, null, 'X', null], 'O', 'X'));
+    //console.log(miniMax([null, null, null, null, 'O', 'O', 'X', 'X', null], 'X', 'O', 0));
 })();
 
